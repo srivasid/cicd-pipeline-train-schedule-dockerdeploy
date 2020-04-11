@@ -8,7 +8,7 @@ pipeline {
                 archiveArtifacts artifacts: 'dist/trainSchedule.zip'
             }
         }
-        stage('Build Docker Image') {
+       """ stage('Build Docker Image') {
             when {
                 branch 'master'
             }
@@ -33,7 +33,7 @@ pipeline {
                     }
                 }
             }
-        }
+        }"""
         stage('DeployToProduction') {
             when {
                 branch 'master'
@@ -43,7 +43,7 @@ pipeline {
                 milestone(1)
                 withCredentials([usernamePassword(credentialsId: 'webserver_login', usernameVariable: 'USERNAME', passwordVariable: 'USERPASS')]) {
                     script {
-                        sh "sshpass -p '$USERPASS' -v ssh -o StrictHostKeyChecking=no $USERNAME@$prod_ip \"docker pull svss/train-schedule-docker:${env.BUILD_NUMBER}\""
+                        sh "sshpass -p '$USERPASS' -v ssh -tt -o StrictHostKeyChecking=no $USERNAME@$prod_ip \"docker pull svss/train-schedule-docker:${env.BUILD_NUMBER}\""
                         try {
                             sh "sshpass -p '$USERPASS' -v ssh -o StrictHostKeyChecking=no $USERNAME@$prod_ip \"docker stop train-schedule-docker\""
                             sh "sshpass -p '$USERPASS' -v ssh -o StrictHostKeyChecking=no $USERNAME@$prod_ip \"docker rm train-schedule-docker\""
